@@ -84,20 +84,22 @@ moneyManager.sendMoneyCallback = ({ to, currency, amount }) => {
 
 const favoritesWidget = new FavoritesWidget();
 
+function updateUsersList(callback) {
+  favoritesWidget.clearTable();
+  favoritesWidget.fillTable(callback.data);
+  moneyManager.updateUsersList(callback.data);
+}
+
 ApiConnector.getFavorites((callback) => {
   if (callback.success) {
-    favoritesWidget.clearTable();
-    favoritesWidget.fillTable(callback.data);
-    moneyManager.updateUsersList(callback.data);
+    updateUsersList(callback);
   }
 });
 
 favoritesWidget.addUserCallback = ({ id, name }) => {
   ApiConnector.addUserToFavorites({ id, name }, (callback) => {
     if (callback.success) {
-      favoritesWidget.clearTable();
-      favoritesWidget.fillTable(callback.data);
-      moneyManager.updateUsersList(callback.data);
+      updateUsersList(callback);
       favoritesWidget.setMessage(
         callback.success,
         ` Пользователь ${name} с id ${id} добавлен в список избранных`
@@ -111,9 +113,7 @@ favoritesWidget.addUserCallback = ({ id, name }) => {
 favoritesWidget.removeUserCallback = (id) => {
   ApiConnector.removeUserFromFavorites(id, (callback) => {
     if (callback.success) {
-      favoritesWidget.clearTable();
-      favoritesWidget.fillTable(callback.data);
-      moneyManager.updateUsersList(callback.data);
+      updateUsersList(callback);
       favoritesWidget.setMessage(
         callback.success,
         ` Пользователь ${id} удален из списка избранных`
